@@ -1,0 +1,27 @@
+# Azure DevOps Pipeline Configuration
+
+# This pipeline builds a Docker image from the Dockerfile and deploys it to Azure App Service.
+
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Docker@2
+  displayName: 'Build Docker image'
+  inputs:
+    command: 'build'
+    containerRegistry: '<YOUR_CONTAINER_REGISTRY>'
+    repository: '<YOUR_REPOSITORY_NAME>'
+    dockerfile: '**/Dockerfile'
+    tags: |
+      $(Build.BuildId)
+
+- task: AzureWebApp@1
+  displayName: 'Deploy to Azure App Service'
+  inputs:
+    azureSubscription: '<YOUR_AZURE_SUBSCRIPTION>'
+    appName: '<YOUR_APP_NAME>'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
